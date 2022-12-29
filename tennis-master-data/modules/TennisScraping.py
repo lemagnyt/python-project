@@ -276,18 +276,22 @@ def create_goat_table(playersDict):
                 gs = 0
                 if 'Active' in Profile:
                     retired='N'
+                # on stock le classement et les pointsd de classement dans 2 différentes variable
                 goatRank,goatPoints = Profile['GOAT Rank'].split(' (')
                 goatPoints = goatPoints.replace(')','')
                 if'Age' in Profile:
+                    #On isole afin d'obtenir l'âge seulement
                     age = Profile['Age'].split(' ')[0]
                 if 'Titles' in Profile:
                     titles = Profile['Titles']
                 if 'Grand Slams' in Profile:
                     gs = Profile['Grand Slams']
                 if'Country' in Profile:
+                    #On enlève les virgules présentes dans certains pays afin de ne pas gêner dans le csv
                     country = Profile['Country'].replace(',','')
                 if 'SetsMatches' in Stats:
                     SetsMatches = Stats['SetsMatches']
+                    #On écrit le pourcentage de victoire avec le ratio
                     winRate = str(SetsMatches['Matches Won %'])+' ('+str(SetsMatches['Matches Won']+'/'+str(SetsMatches['Matches Played'])+')')
                 #On écrit toutes les infos collectées
                 f.write(str(goatRank)+','+name+','+str(age)+','+country+','+winRate+','+retired+','+str(titles)+','+str(gs)+','+str(goatPoints)+'\n')
@@ -357,9 +361,11 @@ def create_stats_csv(playersDict):
                     correct = False
                 elif(Stats[i].keys()!=playersDict['Novak Djokovic']['stats'][i].keys()):
                     correct = False
+                #Si le nombre d'Aces est inférieur à 20 on ne prend pas ce groupe de stat pour ce joueur
                 elif (i=='AcesDFs' and int(Stats[i]['Aces'])<20):
                     correct = False
                 elif (i=='ServeSpeed'):
+                    #On vérifie les erreurs sur la vitesse qui sont très fréquentes
                     if float(Stats[i]['Serve Max Speed'].replace(' km/h',''))>260.3: #On vérifie qu 'il n y a pas eu d'erreur de frappe dans le serivce max dont le record est d'environ 260 km/h
                         correct = False
                     elif float(Stats[i]['Serve Max Speed'].replace(' km/h',''))<=float(Stats[i]['1st Serve Average Speed'].replace(' km/h','')):
@@ -369,16 +375,21 @@ def create_stats_csv(playersDict):
                 #Sinon on les écrit dans le fichier    
                 if correct:
                     f.write(name)
+                    #On enlève les pourcent pour pouvoir obtenir des nombres pour les graphiques
                     for stats,value in playersDict[name]['stats'][i].items():
                         if '%' in value :
                             value = value.replace('%','')
+                        #même chose pour les vitesses
                         elif ' km/h' in value :
                             value = value.replace(' km/h','')
                         
                         if stats=='Match Time':
                             time = value.split(':')
-                            value = str(round(float(time[0])+float(time[1])/60,2))                     
+                            #On convertit le temps en heures au lieu de heure:minutes
+                            value = str(round(float(time[0])+float(time[1])/60,2))  
+                        #On écrit notre Stats                   
                         f.write('|'+value)
+                    #On change de ligne quand on change de joueur    
                     f.write('\n')
 
 #All matches data for a player
@@ -421,11 +432,15 @@ def matchesData(name,playersDict,mode_sleep,nbMatches=None):
             html  = rq.get("https://www.ultimatetennisstatistics.com/matchStats?matchId="+str(match['id'])).text
             soup = BeautifulSoup(html, "html.parser")
             matchStats = dict()
+            #on cherche le nom du premier joueur
             player1 = soup.find('div',{'class':'col-xs-5 text-left'}).text
             matchStats[player1]=dict()
-            player2 = soup.find('div',{'class':'col-xs-5 text-right'}).text
+            #On cherche le nom du 2 ème joueur
+            player2 = soup.find('div',{'class':'col-xs-5 text-right'}).text#pour les 2 joueurs on crée une clée par rapport au dictionnaire des stats
+            
             matchStats[player2]=dict()
             table = soup.find_all('table',{'class':'table table-condensed table-hover table-striped text-nowrap'})
+            #On parcour tous les tableaux et on stocke les stats des 2 joueurs du match
             for t in table[1:] :
                 tr = t.find_all('tr')
                 for a in tr :
@@ -441,6 +456,7 @@ def matchesData(name,playersDict,mode_sleep,nbMatches=None):
                         th = a.find_all('th')
                         stat = a.find('td').text
                         if(title != 'Time'):
+                            #si il y a un ratio et un pourcentage on les sépare en 2 différentes clée pour la stat
                             if(len(th)==4):
                                 matchStats[player1][title][stat]=dict()
                                 matchStats[player2][title][stat]=dict()                            
@@ -453,6 +469,7 @@ def matchesData(name,playersDict,mode_sleep,nbMatches=None):
                                 matchStats[player2][title][stat]=th[1].text
                         else :
                             matchStats[title][stat]=th[1].text
+            #on stock notre dictionnaire de stat en tant que valeur de stat pour ce match dans notre liste de match
             m['stats']=matchStats
         #On ajoute notre match à notre list de matchs
         matches.append(m)

@@ -52,8 +52,10 @@ def world_data1(mode_map):
     for code in world['iso_a2']:
         for stat in statDict:
             if(stat in ['Total Players'] or 'Total' in stat or 'Top' in stat):
+                #Si ce n'est pas un ratio on prendre juste une valeur pour la stat
                 statDict[stat][code]=0
             else :
+                #Sinon 2 une pour la somme des stats et l'autre pour le nombre de joueurs dont on a pris la stat
                 statDict[stat][code] = [0,0]
     
     #On cherche pour chaque joueurs             
@@ -64,12 +66,14 @@ def world_data1(mode_map):
             country = players[p]['Country'].upper()
             statDict['Total Players'][country] += 1; 
             rank = int(players[p]['profile'][rank_name].split(' (')[0])
+            #On vérifie d'abord les rang du top 400 au top 100
             if 'Top 400 Players' in statDict.keys()  and rank<= 400:
                 statDict['Top 400 Players'][country]+=1
             if rank<= 200:
                 statDict['Top 200 Players'][country]+=1
                 if rank<= 100:
                     statDict['Top 100 Players'][country]+=1
+            #On compte le nombre de titres
             if('Total Titles' in statDict.keys() and 'Titles' in players[p]['profile']):
                 nb_titles = int(players[p]['profile']['Titles'])
                 title_ratio = statDict['Titles per player'][country] 
@@ -82,6 +86,7 @@ def world_data1(mode_map):
                 statDict['Total Grand Slams'][country] += nb_grandslams
                 statDict['Grand Slams per player'][country][0] = (gs_ratio[1]*gs_ratio[0] + nb_grandslams)/float(gs_ratio[1]+1)   
                 statDict['Grand Slams per player'][country][1] += 1
+            #On compte le nombre de matchs
             if('Total Matches' in statDict.keys() and 'SetsMatches' in players[p]['stats'] and 'Matches Played' in players[p]['stats']['SetsMatches']):
                 nb_matches = int(players[p]['stats']['SetsMatches']['Matches Played'])
                 matches_ratio = statDict['Matches per player'][country] 
@@ -147,12 +152,14 @@ def world_data2(matches):
             win[country]+=1
         else :
             country = match['winner']['country']['code'].upper()
+            #On remplace les joueurs de monaco par des Français car ce n'est pas un pays et donc pas dans notre data
             if country == 'MC': 
                 country = 'FR'
             lost[country]+=1
         played[country]+=1
     for country in world['iso_a2']:
         if played[country]>0:
+            #si le nombre de match joué est supérieur à 0 dans le pays on fait la division afin d'obtenir le pourcentage de matchs gagné pour un pays
             ratio[country]=(win[country]/played[country])*100
 
     #On stocke tout dans notre data où se trouve les points géométriques

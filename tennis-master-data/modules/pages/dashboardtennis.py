@@ -7,6 +7,7 @@ import pandas as pd
 import json
 import modules.world_data as world_data
 
+# On charge les csv pour tous nos groupes de stats
 rankingList = pd.read_csv('data/rankingTable.csv')
 goatList = pd.read_csv('data/goatTable.csv')
 AcesDFs = pd.read_csv('data/Stats/AcesDFs.csv',sep='|')
@@ -18,6 +19,7 @@ OpponentTime = pd.read_csv('data/Stats/OpponentTime.csv',sep='|')
 Points = pd.read_csv('data/Stats/Points.csv',sep='|')
 Return = pd.read_csv('data/Stats/Return.csv',sep='|')
 
+#Liste des stats que l'on va étudier dans nos graphiques
 histoStats=['Ace %','Aces per Match','Aces per Set','Double Fault %','DFs per Match','DFs per Set','Ace Against %','Double Fault Against %',
             'Games Won %','Games per Set','Games per Match','Tie-Breaks Won %','Tie-Breaks per Match','Tie-Breaks per Set %',
             'Match Time','Set Time (minutes)','Game Time (minutes)','Point Time (seconds)',
@@ -26,6 +28,8 @@ histoStats=['Ace %','Aces per Match','Aces per Set','Double Fault %','DFs per Ma
             '1st Serve Won %','2nd Serve Won %','Service Points Won %','Points per Service Game','Break Points Saved %','Service Games Won %','Svc. In-play Pts. Won %',
             'Serve Max Speed','1st Serve Average Speed','2nd Serve Average Speed',
             'Sets Won %','Sets per Match','Matches Won %']
+
+#titre des groupes de stats des différentes stats
 histoStatsTitles = ['Aces & Double Faults','Games','Time','Points','Return','Serve','Serve Speed','Sets & Matches']
 
 with open('data/tennis-data.json','r') as f:
@@ -71,6 +75,9 @@ def fusion_data(data1,data2):
             Returns:
                      pd.DataFrame(data)(pd.DataFrame): The fusion of the two datas
     '''
+    
+    #On va comparer os 2 datas en fonction des noms de joueurs puis on fusionne les 2 à partir d'un dictionnaire qu'on
+    #transformera ensuite en dataFrame.
     data = {'name':[name for name in data1['name']]}
     for stat in list(data1.columns)+list(data2.columns):
         data[stat]=[]
@@ -136,6 +143,7 @@ def filtre_data(dataframe):
 world_ranking = world_data.world_data1('RANKING')
 world_goat = world_data.world_data1('GOAT')
 
+#Initialisation de nos différents graphiques et maps
 histo = px.histogram(AcesDFs,x='Ace %',range_x=[-5,30],nbins=300)
 histo2 = px.histogram(AcesDFs,x='Ace Against %',range_x=[-5,30],nbins=300)
 fig2 = dcc.Graph(figure=histo2,id='figure2')
@@ -247,6 +255,15 @@ def update_mode(value) :
 
 @callback(Output('tbl','data'),Input('checklist','value'),Input('mode-dropdown','value'))
 def update_table(value,mode):
+    '''
+    Updates the table depending on the mode selected.
+
+            Parameters:
+                    mode (str): the mode for the table
+            Returns:
+                    (dict) : the data for the table
+                    
+    '''
     columns=['Rank','Name','Points']+value 
     if mode == 'Goat Table':
         tableData=goatList[columns]
@@ -256,8 +273,21 @@ def update_table(value,mode):
     return tableData.to_dict('records')
 
 @callback(Output('tbl_out', 'children'),Output('playerSelected','children'), Input('tbl', 'active_cell'),Input('tbl','page_current'),Input('mode-dropdown','value'))
-def update_graphs(active_cell,page_current,mode):
+def update_profiles(active_cell,page_current,mode):
+    '''
+    Updates the profile table depending on the cell selected
+
+            Parameters:
+                    active_cell (cell): the cell selected
+                    page_current (int) : the page where there is the cell
+                    mode (str) : the mode of the table
+            Returns:
+                    (list): the list of components on the side of the profile table
+                    
+    '''
     if active_cell :
+        #Si il y a une case sélectionné on regarde si c'est celle des noms. Si oui on retourne le profile du joueur à partir de la ligne et du numéro de la page
+        #qui nous permet d'obtenir le numéro d'ordre dans la data du joueur
         if active_cell['column']==1:
 
             if mode == 'Goat Table':
@@ -273,12 +303,33 @@ def update_graphs(active_cell,page_current,mode):
 
 @callback(Output('dap-DdHisto2','options'),Output('dap-DdHisto2','value'),Input('dap-DdHisto1','value'))
 def update_histo1(value):
+    '''
+    Updates the dropdown option and value for the second histogram depending on the first dropdown
+
+            Parameters:
+                    value (str): the value of the first dropdown, the group of stat Title
+            Returns:
+                    data[0] (list) : list of stat for this group of stats
+                    data[0][0] (str) : first stat of the list
+                    
+    '''
     data = find_data(value)
     return data[0],data[0][0]
 
 @callback(Output('dap-figHisto','figure'),Input('dap-DdHisto1','value'),Input('dap-DdHisto2','value'))
 def update_histo2(value1,value):
+    '''
+    updates the histogram depending on the value of its two dropdowns
+
+            Parameters:
+                    value1 (str): the value of the first dropdown to find the data needed for the histogram
+                    value (str) : the value of the stat that is used in the histogram (second dropdown)
+            Returns:
+                    histo (px.histogram) : the histogram with the data filtred
+                    
+    '''
     graphData = pd.DataFrame(find_data(value1)[1].to_dict())
+    #On filtre notre graphe en enlevant les 3 % plus petits et plus grands.
     filtre = filtre_data(graphData[value])
     graphData= graphData[(graphData[value]<=filtre[1]) & (graphData[value]>=filtre[0])]
     alpha=int((max(graphData[value])-min(graphData[value]))/10)
@@ -288,7 +339,21 @@ def update_histo2(value1,value):
 
 @callback(Output('dap-dataFusion','data'),Output('dap-DdGraph2','options'),Output('dap-DdGraph2','value'),Input('dap-DdGraph1','value'),Input('dap-DdHisto1','value'),Input('dap-DdHisto2','value'))
 def update_graph1(valueG,valueH1,valueH2):
+    '''
+    Updates the second dropdown option and value for the histogram depending on the first dropdown, fusion the two datas and stock this fusion
+
+            Parameters:
+                    valueG (str): the value of the first dropdown for the graph, to obtain the first data for the graph
+                    valueH1 (str) : the value of the first dropdown for the histogram, to obtain the second data and to chose the options and value for the second dropdown
+                    valueH2 (str) : the stat of the histogram
+            Returns:
+                    data.todict() (dict) : the fusioned data dict
+                    data1[0] (list) : the option for the second dropdown (list of stats)
+                    data[1][0] (str) : the first stat of the list as the value
+                    
+    '''
     data1 = find_data(valueG)
+    #Si le groupe de stat est le même on enlève dans la sélection des stats du graphique celle de l'histo afin de ne pas avoir deux fois la même pour le graphique
     if valueG==valueH1:
         listData = list_without_element(data1[0],valueH2)
         return data1[1].to_dict(),listData,listData[0]
@@ -298,6 +363,17 @@ def update_graph1(valueG,valueH1,valueH2):
 
 @callback(Output('dap-figGraph','figure'),Input('dap-DdGraph2','value'),Input('dap-DdHisto2','value'),Input('dap-dataFusion','data'))
 def update_graph2(valueG2,valueH2,data):
+    '''
+    Updates the graphic with the fusioned data stocked depending on the two stats selected
+
+            Parameters:
+                    valueG2 (str): first stat
+                    valueH2 (str) : second stat (the histogram stat)
+                    data (dict) : the fusioned data stocked
+            Returns:
+                    graph (px.scatted) : the graphic created
+                    
+    '''
     graphData = pd.DataFrame(data)
     filtre = filtre_data(graphData[valueH2])
     filtre1 = filtre_data(graphData[valueG2])
@@ -310,8 +386,16 @@ def update_graph2(valueG2,valueH2,data):
         
     
 @callback(Output("graph-dropdown4",'options'),Output("graph-dropdown4",'value'),Input("graph-dropdown3",'value'))
-
 def update_mode_map(mode_map):
+    '''
+    Updates the options and value of the map second dropdown depending on the first one value
+            Parameters:
+                    mode_map (str) : the value of the first dropdown, the mode selected
+            Returns:
+                    map_options (list) : the list of stats for the dropdown
+                    (str) : the value for the dropdown
+                    
+    '''
     if mode_map == 'RANKING':
         map_options = [{'label':i,'value':i} for i in world_data.ranking_stats]
     else :
@@ -320,6 +404,18 @@ def update_mode_map(mode_map):
 
 @callback(Output("map","figure"),Input("graph-dropdown4",'value'),Input("graph-dropdown3",'value'))      
 def update_map(stat,mode):
+    '''
+    Updates the map depending on the two dropdowns
+
+            Parameters:
+                    stat (str) : the value of the second dropdown, the stat selected
+                    mode (str) : the value of the first dropdown; the mode selected
+            Returns:
+                    map : the map created with hover_data depending on the stat selected
+                    
+    '''
+    
+    #On choisit les hover_data en fonction de la stat qui seront affichées lorsque notre souris va sur un pays
     hovertemplate = ['Country : %{customdata[1]}']
     if 'Top' not in stat:
         hovertemplate.append('Players : %{customdata[0]}')

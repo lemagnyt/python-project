@@ -301,6 +301,7 @@ for name in other_names:
 
 #Ici on va créer nos différents tableaux à parti de la data obtenue
 
+#On crée notre data pour le tableau des Grand chelem à partir de l'année
 for gs in GS:
     for y in GS[gs]:
         for name in names:
@@ -325,7 +326,7 @@ for y in range(1999,2023):
 
 
 
-
+#On crée le tableau à partir de la data en mettant des couleurs en fonction du résultat, et de la surface pour les noms de tournoi
 tableGS = dash_table.DataTable(
     columns=GScolumns,
     data = GSdata,
@@ -429,6 +430,7 @@ tableGS = dash_table.DataTable(
     ]
 )
 
+#On crée toutes les data pour les graphiques pour chaque joueurs
 raceGSData = {'Year': [y for y in range(1999,2023)]}
 raceM1000Data = {'Year': [y for y in range(1999,2023)]}
 raceTitlesData = {'Year': [y for y in range(1999,2023)]}
@@ -439,6 +441,7 @@ for name in names:
     raceM1000Data[name]=[nb for nb in list(raceM1000[name].values())]
     raceATPFinalsData[name]=[nb for nb in list(raceATPFinals[name].values())]
 
+#On crée ensuite la data pour nos tableaux H2H. Au total on fait 3 tableaux, 2 avec des infos et 1 avec les stats
 H2HData = {}
 for name in names:
     other_names = names.copy()
@@ -452,6 +455,7 @@ for name in names:
         H2HStats = {name:[stat for stat in H2Hdict['Stats'].values()],'Stats':[stat for stat in H2Hdict['Stats']],
                     oponnent:[stat for stat in H2Hdict1['Stats'].values()]}
         H2HData[name+' - '+oponnent] = {'Info1':H2HInfo1,'Info2':H2HInfo2,'Stats':H2HStats}
+
 
 def table_H2H(player1,player2):
     '''
@@ -482,11 +486,12 @@ def table_H2H(player1,player2):
     return [tableH2HInfo1,html.Br(),tableH2HInfo2,tableH2HStats]
 
 
-
-df = pd.DataFrame(raceATPFinalsData)
+#On initialise notre graphique de course aux titres avec la course au grand chelems
+df = pd.DataFrame(raceGSData)
 fig = px.line(df, x='Year', y=df.columns[1:],title="Grand Slams' Race")
 
 
+#On crée notre tableau de profiles à partir de la data
 table = dash_table.DataTable(profilesData.to_dict('records'),
                 style_header={'textAlign': 'center'},
                 style_cell={'textAlign': 'center','height': 'auto','minWidth': '180px', 'width': '180px', 'maxWidth': '180px','whiteSpace': 'normal'},
@@ -559,36 +564,101 @@ layout = dbc.Container(children=[
 
 @callback(Output('dbt-tableStats','children'),Input('dbt-DdTableStats','value'))
 def updata_table_stats(statTitle):
+    '''
+    Updates the table stats by changing the groupe of stats title.
+
+            Parameters:
+                    statTitle(str) : the group of stat title
+
+            Returns:
+                    (dash.DataTable) : the table created
+    '''
     return create_table_stats(statTitle)
 
 @callback(Output('dbt-playerH2H2','options'),Input('dbt-playerH2H1','value'))
 def H2Htables(player):
+    '''
+    Return the second dropdown options depending on the first dropdown value for the H2H
+
+            Parameters:
+                    player (str): first player of the H2H
+
+            Returns:
+                    other_names (list) : a list of name without the name already selected in the first dropdown
+    '''
+    #On renvoie une liste des noms sans le nom déjà présent dans le premier dropdown afin de ne pas pouvoir l'utiliser 2 fois
     other_names = names.copy()
     other_names.remove(player)
     return other_names
 
 @callback(Output('dbt-playerH2H1','options'),Input('dbt-playerH2H2','value'))
 def H2Htables(player):
+    '''
+    Return the first dropdown options depending on the second dropdown value for the H2H
+
+            Parameters:
+                    player (str): second player of the H2H
+
+            Returns:
+                    other_names (list) : a list of name without the name already selected in the second dropdown
+    '''
     other_names = names.copy()
     other_names.remove(player)
     return other_names
 
 @callback(Output('dbt-imageH2H1','src'),Input('dbt-playerH2H1','value'))
 def update_image1(player) :
+    '''
+    Updates the image depending on the player the selected
+
+            Parameters:
+                    player (str): player selected
+
+            Returns:
+                    (dash.get_asset_url) : the url image of the player
+    '''
     imageName = player.split(' ')[1].lower()+'.jpg'
     return dash.get_asset_url(imageName)
 
 @callback(Output('dbt-imageH2H2','src'),Input('dbt-playerH2H2','value'))
 def update_image2(player) :
+    '''
+    Updates the image depending on the player the selected
+
+            Parameters:
+                    player (str): player selected
+
+            Returns:
+                    (dash.get_asset_url) : the url image of the player
+    '''
     imageName = player.split(' ')[1].lower()+'.jpg'
     return dash.get_asset_url(imageName)
 
 @callback(Output('dbt-tableH2H','children'),Input('dbt-playerH2H1','value'),Input('dbt-playerH2H2','value'))
 def H2Htables(player1,player2):
+    '''
+    Updates the H2H table depending on the two player selected
+
+            Parameters:
+                    player1 (str): first player selected
+                    player2 (str): second player selected
+
+            Returns:
+                    (dash.dataTable) : the 3 H2H tables
+    '''
     return table_H2H(player1,player2)
 
 @callback(Output('dbt-figRace','figure'),Input('dbt-DdRace','value'))
 def raceGraph(tournament):
+    '''
+    Updates the race tournament graphic depending on the tournament the selected
+
+            Parameters:
+                    tournament (str): tournament selected
+
+            Returns:
+                    figRace (px.line) : the graphic wanted
+    '''
     if(tournament=='Grand Slams'):
         dataRace = pd.DataFrame(raceGSData)
     elif(tournament=='ATP Finals'):
@@ -598,16 +668,23 @@ def raceGraph(tournament):
     elif(tournament=='Titles'):
         dataRace = pd.DataFrame(raceTitlesData)        
     figRace = px.line(dataRace, x='Year', y=df.columns[1:],height=800,width=1600,title='Number of '+tournament+' won over the years by the Big Three')
+    #Pour pouvoir comparer les 3 données sur le graphique en fonction de l'année
     figRace.update_traces(mode="markers+lines", hovertemplate=None)
     figRace.update_layout(yaxis_title='Number of '+tournament,legend=dict(title="Players"),title_x=0.5,hovermode="x unified")
-    
-    # figRace.update_layout(
-    # paper_bgcolor="LightSteelBlue",
-    # )
     return figRace
 
 @callback(Output('dbt-histomap1','children'),Output('dbt-histomap2','children'),Output('dbt-histomap3','children'),Input('dbt-Ddmap','value'),Input('dbt-histoStats','value'))
 def maphisto_update(mapStat,histoStat): 
+    '''
+    Updates the maps and histograms depending on eaches stat
+
+            Parameters:
+                    mapStat (str): the stat for the maps
+                    histoStat (str) : the stat for the histograms
+
+            Returns:
+                    histomap1,histomap2,histomap3  : the 3 histograms and maps
+    '''
     histomaps = [html.Br()]
     histoList = histograms_list(histoStat)
     mapList =maps_list(mapStat)  
