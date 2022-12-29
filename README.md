@@ -6,7 +6,7 @@ Tennis data for Goat Players and Ranking Players and data comparaison for the bi
 
 Installation :
 ```sh
-$ git clone URL_DU_DEPOT
+$ git clone https://github.com/lemagnyt/python-project
 ```
 
 Required Packages :
