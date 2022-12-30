@@ -1,8 +1,8 @@
 # Tennis Master Data
 # _User Guide :_ 
 Description :
-Ce programme permet de récupérer de la data des joueurs de tennis et de l'afficher ensuite sur des graphiques, des tableaux, et des cartes. Les joueurs sont classé en tant que 'goat' (meilleurs joueurs de tous les temps) et 'ranking' (meilleurs joueurs actuels). Ce principe est très important dans la première page du dashboard. (Attention des joeurs peuvent être présents dans les 2 différents rangs).
-Une analyse complète du Big Three (Roger Federer, Rafael Nadal, Novak Djokovic) est aussi effectuée, où leurs stats sont comparées sur tous les points par rapport à tout leurs matches.
+Ce programme permet de récupérer de la data des joueurs de tennis et de l'afficher ensuite sur des graphiques, des tableaux, et des cartes. Les joueurs sont classés en tant que 'goat' (meilleurs joueurs de tous les temps) et 'ranking' (meilleurs joueurs actuels). Ce principe est très important dans la première page du dashboard. (Attention des joeurs peuvent être présents dans les 2 différents rangs).
+Une analyse complète du Big Three (Roger Federer, Rafael Nadal, Novak Djokovic) est aussi effectuée, où leurs stats sont comparées sur tous les points par rapport à tous leurs matches.
 
 Installation :
 ```sh
@@ -41,16 +41,16 @@ Le dashboard contient deux différentes pages :
 Pour changer de page vous devez cliquer sur un des deux liens en haut à gauche de l'écran.
 
 Sur la page 'Tennis Players Data' vous avez à votre disposition :
-- Un tableau des joueurs suivi d'un tableau de profiles à sa droite. Vous pouvez changer entre les mode 'goat' et 'ranking' expliqués plus haut. En dessous du tableau vous avez des check box qui vous permettent d'afficher des infos supplémentaires dans le tableau. Enfin si vous cliquez sur un nom de joueur son profile s'affichera sur le tableau à droite. Vous pouvez d'ailleurs changer de page du tableau en cliquant sur les flèches en bas de celui-ci afin de voir les différents joueurs.
-- Un histogramme révélant une statistique de tennis pour tous les joueurs présents dans la data. Avec le premier dropdown vous pouvez sélectionner le groupe de stats, puis avec le second vous pouvez choisir la stat voulu.
--  Un graphique qui montre le rapport entre deux différentes stats au tennis. La première stat est celle sélectionné pour l'histogramme, et la deuxième celle sélectionné au dessus du graphique avec le même principe que pour l'histogramme
+- Un tableau des joueurs suivi d'un tableau de profiles à sa droite. Vous pouvez changer entre le mode 'goat' et 'ranking' expliqués plus haut. En dessous du tableau vous avez des check box qui vous permettent d'afficher des infos supplémentaires dans le tableau. Enfin si vous cliquez sur un nom de joueur son profile s'affichera sur le tableau à droite. Vous pouvez d'ailleurs changer de page du tableau en cliquant sur les flèches en bas de celui-ci afin de voir les différents joueurs.
+- Un histogramme révélant une statistique de tennis pour tous les joueurs présents dans la data. Avec le premier dropdown vous pouvez sélectionner le groupe de stats, puis avec le second vous pouvez choisir la stat voulue.
+-  Un graphique qui montre le rapport entre deux différentes stats au tennis. La première stat est celle sélectionné pour l'histogramme, et la deuxième celle sélectionné au-dessus du graphique avec le même principe que pour l'histogramme
 - Une carte du monde affichant une stat par rapport à tous les joueurs de tennis du mode choisit. Le dropdown à gauche permet de choisir le mode (Ranking ou goat) et celui à droite permettant de choisir la stat qu'on veut afficher. Une hover-data bien précise est affiché selon la stat.
 
 Sur la page 'Tennis Players Data' vous avez à votre disposition :
 - Un tableau des profiles des 3 joueurs du Big Three
 - Un tableau de statistiques dont on peut modifier le groupe de stat à l'aide d'un dropdown
-- Trois tableaux permettant d'afficher les face à face entre 2 joueurs parmis les 3 que l'on choisit à l'aide des 2 dropdown
-- Un tableau des résultat en grand chelem de nos 3 joueurs durant ses dernières années avec des couleurs pour les différentes surfaces (dur, terre et gazon) et des couleurs selon le résultat obtenu.
+- Trois tableaux permettant d'afficher les face à face entre 2 joueurs parmi les 3 que l'on choisit à l'aide des 2 dropdown
+- Un tableau des résultats en grand chelem de nos 3 joueurs durant ses dernières années avec des couleurs pour les différentes surfaces (dur, terre et gazon) et des couleurs selon le résultat obtenu.
 - Un graphique montrant l'évolution du nombre de tournois gagnés au fil des années. n peut changer le type de tournoi avec le dropdown et si on met la souris sur le graphique on peut comparer nos 3 joueurs pour une année.
 - Un histogramme et une carte du monde pour les 3 joueurs, les 2 ayant une stat différente à montre que l'on peut changer avec les dropdown.
 
@@ -60,10 +60,10 @@ Architecture :
 
 
 Copyright :
-Je déclare sur l’honneur que le code fourni a été produit par moi/nous même, à l’exception des lignes ci dessous.
+Je déclare sur l’honneur que le code fourni a été produit par moi/nous-même, à l’exception des lignes ci-dessous.
 
-Sources :
-All the data was find on the website : 
+Sources:
+Toute la data a été récupérée sur le site : 
 [Ultimate Tennis](ultimatetennisstatistics.com/)
 
 # RAPPORT D'ANALYSE
@@ -93,8 +93,9 @@ En conclusion, ce dashboard nous permet de relever beaucoup de faits importants 
 # Developer Guide
 Le code peut être modifié bien évidemment. Par exemple la création de la page du big three se fait à partir d'une liste avec leur 3 noms et de la data de leurs matches. On aurait juste à créer la data d'un autre joueur et d'ajouter sa liste au nom pour que la comparaison se fasse avec d'autres. Pour n'importe quel joueur dont on a l'idée on peut donc récupérer toutes les infos sur chacun de ces matchs. D'autres stats peuvent être étudier parmi celle dont on a décidé de faire impasse. De nouveaux graphiques peuvent être réalisés et bien plus encore. La liste des choses possibles à faire est en effet très diversifiée au vu du nombre de statistiques que le tennis présente.
 
-Important ! : Pour le programme main vous pouvez choisir ou non si le mode scraping est activé ou si vous voulez utiliser la data déjà présente en mettant dans les paramètre de la fonction create_dashboard, "mode_scraping = True". Cela télécharger la data de tous les joueurs et la data des matchs pour les 3 joueurs du big three. Sans le mode_sleep le processus devrait prendre 10 à 15 minutes. 
+Important ! : Pour le programme main vous pouvez choisir ou non si le mode scraping est activé ou si vous voulez utiliser la data déjà présente en mettant dans les paramètres de la fonction create_dashboard, "mode_scraping = True". Cela télécharger la data de tous les joueurs et la data des matchs pour les 3 joueurs du big three. Sans le mode_sleep le processus devrait prendre 10 à 15 minutes. 
 
-Vous pouvez tester les 2 principales fonction de scraping 'all_data_scraping' et 'matchesData' en ajoutant aux paramètres de la fonction 'test=True' afin de ne pas mélanger les datas. Les fichier json seront alors écrit avec un '_test' à la fin de leur nom.
+Vous pouvez tester les 2 principales fonctions de scraping 'all_data_scraping' et 'matchesData' en ajoutant aux paramètres de la fonction 'test=True' afin de ne pas mélanger les datas. Les fichier json seront alors écrit avec un '_test' à la fin de leur nom.
 
 Architecture : Le programme possède un fichier main.py permettant de lancer le programme, mais aussi un dossier modules où se trouve les différents codes permettant de scraper les données et de créer le dashboard. Le module 'TennisScraping' s'occupe de tout ce qui est data des joueurs ou des matchs à récupérer et mettre dans des fichiers, puis le module 'world-data.py' l'épaule en s'occupant de classer la data par pays et d'en faire une nouvelle data pour créer des cartes du monde. Le module 'app.py' lui va créer le dashboard multi-pages à l'aide du dossier Pages où se truve les deux différents codes pour les deux différentes pages du dashboard. Enfin dans assets nous retrouvons les différentes images et polices utiliser pour notre dashboard.
+
