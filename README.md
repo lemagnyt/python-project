@@ -88,6 +88,8 @@ Pour les maps on voit que Nadal a du mal contre les Russes contrairement aux 2 a
 
 Pour les histogrammes on voit que les 3 sont vraiment pratiquement identiques pour le pourcentage de point gagnés par match. Federer domine largement sur le nombre d'Ace par set. Dans la plupart des stats les 3 sont vraiment très serrés et cela montre à quel point ce sont des champions incontestés du tennis qui sont très dur à départager.
 
+En conclusion, ce dashboard nous permet de relever beaucoup de faits importants sur le tennis, nottamment sur la détermination du meilleur joueur de tous les temps qui paraît tellement compliquée tant les 3 joueurs se tiennent au coude à coude.
+
 # Developer Guide
 Le code peut être modifié bien évidemment. Par exemple la création de la page du big three se fait à partir d'une liste avec leur 3 noms et de la data de leurs matches. On aurait juste à créer la data d'un autre joueur et d'ajouter sa liste au nom pour que la comparaison se fasse avec d'autres. Pour n'importe quel joueur dont on a l'idée on peut donc récupérer toutes les infos sur chacun de ces matchs. D'autres stats peuvent être étudier parmi celle dont on a décidé de faire impasse. De nouveaux graphiques peuvent être réalisés et bien plus encore. La liste des choses possibles à faire est en effet très diversifiée au vu du nombre de statistiques que le tennis présente.
 
