@@ -1,8 +1,8 @@
 # Tennis Master Data
 # _User Guide :_ 
 Description :
-Ce programme permet de récupérer de la data des joueurs de tennis et de l'afficher ensuite sur des graphiques, des tableaux, et des cartes. Les joueurs sont classé en tant que 'goat' (meilleurs joueurs de tous les temps) et 'ranking' (meilleurs joueurs actuels). 
-Une analyse complèthe du Big Three (Roger Federer, Rafael Nadal, Novak Djokovic) où leurs stats sont comparées sur tous les points par rapport à tout leurs matches.
+Ce programme permet de récupérer de la data des joueurs de tennis et de l'afficher ensuite sur des graphiques, des tableaux, et des cartes. Les joueurs sont classé en tant que 'goat' (meilleurs joueurs de tous les temps) et 'ranking' (meilleurs joueurs actuels). Ce principe est très important dans la première page du dashboard. (Attention des joeurs peuvent être présents dans les 2 différents rangs).
+Une analyse complète du Big Three (Roger Federer, Rafael Nadal, Novak Djokovic) est aussi effectuée, où leurs stats sont comparées sur tous les points par rapport à tout leurs matches.
 
 Installation :
 ```sh
